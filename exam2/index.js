@@ -1,47 +1,45 @@
-getFriendlyNumbers = (start, end) => {
-    if (start < 0 || end < 0) return false;
-    if (start > end) return false;
-    if (typeof start !== 'number' || typeof end !== 'number') return false;
+/* { firstName: 'Sergey', lastName: 'Zotenko', seniorityLevel: 'intermediate' } */
 
-    let amicablePairsUpTo = (start, end) =>
-      range(start, end)
-        .map(x => properDivisors(x)
-        .reduce((a, b) => a + b, 0))
-        .reduce((a, m, i, lst) => {
-          let n = i + 1;
-          return (m > n) && lst[m - 1] === n ? a.concat([[n, m]]) : a;
-        }, []),
-    
-        properDivisors = n => {
-          if (n < 2) return [];
-          else {
-            let rRoot = Math.sqrt(n),
-              intRoot = Math.floor(rRoot),
-              blnPerfectSquare = rRoot === intRoot,
-    
-              lows = range(1, intRoot)
-                .filter(x => (n % x) === 0);
-  
-                return lows.concat(lows.slice(1)
-                  .map(x => n / x)
-                  .reverse()
-                  .slice(blnPerfectSquare | 0));
-          }
-        },
-    
-        range = (m, n, step) => {
-          let d = (step || 1) * (n >= m ? 1 : -1);
-    
-          return Array.from({
-            length: Math.floor((n - m) / d) + 1
-          }, (_, i) => m + (i * d));
-        }
-  
-    return amicablePairsUpTo(start, end);
+const participantObject = {
+  firstName: string,
+  lastName: string,
+  seniorityLevel: string
+}
+
+/* { 'junior': 10 } */
+const pricingObject = {
+  roleName: number
+}
+
+const project = {
+   participants: [],
+   pricing: { },
+   isBusy: boolean,
+
+   // устанавливает значения объекта
+   init(participants, pricing) { },
+
+   // поиск  1 подходящего участника
+   findParticipant(functor, callbackFunction) { },
+
+   // поиск всех участников
+   findParticipants(functor, callbackFunction) { },
+
+   // добавляет участника
+   addParticipant(participantObject, callbackFunction) { },
+
+   // удаляет объект участника
+   removeParticipant(participantObject, callbackFunction) { },
+
+   // устанавливает значение поля
+   setPricing(participantPriceObject, callbackFunction) { },
+
+   // возвращает зарплату участника за 8 часов
+   calculateSalary(periodInDays) { }
 }
 
 module.exports = {
-    firstName: 'Mihaylo',
-    secondName: 'Merezhko',
-    task: getFriendlyNumbers
+   firstName: 'Mihaylo',
+   lastName: 'Merezhko',
+   task: ProjectModule
 }
