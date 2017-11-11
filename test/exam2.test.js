@@ -1,4 +1,4 @@
-const student = require('./exam2');
+const student = require('../exam2');
 
 describe('Dev-Pro OpenJS - Exam 2', () => {
     const { task: project } = student;
