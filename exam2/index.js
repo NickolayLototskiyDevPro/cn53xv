@@ -1,108 +1,106 @@
 const ProjectModule = (function() {
-  let participants = [],
-      pricing = {},
-      isBusy = false;
+  const project = {
+    participants: [],
+    pricing: {},
+    isBusy: false,
 
-  init = (participants) => {
-    let participantObject = Object.create(null, {
-      firstName: {
-        enumerable: true,
-        value: participants[0]
-      },
-      lastName: {
-        enumerable: true,
-        value: participants[1]
-      },
-      seniorityLevel: {
-        enumerable: true,
-        value: participants[2]
+    init(participants, pricing) {
+      if (Array.isArray(participants) && participants.every(item => item.hasOwnProperty('seniorityLevel'))) {
+        this.participants = participants;
       }
-    });
+      if (typeof pricing === 'object') {
+        this.pricing = pricing;
+      }
+    },
 
-    return participantObject;
-  },
-    
-  findParticipant = (functor, callbackFunction) => {
-    functor = (arr, key, value) => {
-      for (let i = 0; i < arr.length; i++) {
-        if (arr[i][key] === value) {
-          return arr[i];
+    findParticipant(functor, callbackFunction) {
+      this.isBusy = true;
+      setTimeout(() => {
+        let participant = this.participants.find(functor);
+        if (participant === undefined) {
+          participant = null;
+        }
+        this.isBusy = false;
+        callbackFunction(participant);
+      });
+    },
+
+    findParticipants(functor, callbackFunction) {
+      this.isBusy = true;
+      setTimeout(() => {
+        let participants = this.participants.filter(functor);
+        if (participants === undefined) {
+          callbackFunction([]);
+        }
+        project.isBusy = false;
+        callbackFunction(participants);
+      });
+    },
+
+    addParticipant(participantObject, callbackFunction) {
+      this.isBusy = true;
+      setTimeout(() => {
+        try {
+          if (participantObject.hasOwnProperty('seniorityLevel')) {
+            this.participants.push(participantObject);
+            project.isBusy = false;
+            callbackFunction();
+          } else {
+            project.isBusy = false;
+            throw new Error('error');
+          }
+        } catch (err) {
+          callbackFunction(err);
+        }
+      });
+    },
+
+    removeParticipant(participantObject, callbackFunction) {
+      this.isBusy = true;
+      setTimeout(() => {
+        let index = this.participants.indexOf(participantObject);
+        if (index === -1) {
+          project.isBusy = false;
+          callbackFunction(null);
+        } else {
+          project.isBusy = false;
+          callbackFunction(this.participants.splice(index, 1)[0]);
+        }
+      });
+    },
+
+    setPricing(participantPriceObject, callbackFunction) {
+      this.isBusy = true;
+      setTimeout(() => {
+        Object.assign(this.pricing, participantPriceObject);
+        project.isBusy = false;
+        callbackFunction();
+      });
+    },
+
+    calculateSalary(periodInDays) {
+      if (typeof periodInDays === 'number') {
+        let res = this.participants.reduce((res, i) => {
+          return res += this.pricing[i.seniorityLevel] * periodInDays * 8;
+        }, 0);
+        if (!isNaN(res)) {
+          return res;
+        } else {
+          throw new Error('err');
         }
       }
-      return null;
     }
+  };
 
-    return callbackFunction = functor(participants, 'firstName', 'Sergey');
-  },
-   
-  findParticipants = (functor, callbackFunction) => {
-    let res = [];
-    functor = (arr, key, value) => {
-      for (let j = 0; j < arr.length; j++) {
-        if (arr[j][key] === value) {
-          res.push(arr[j]);
-        }
-      }
-      return res;
-    }
+  let instance,
+    createInstance = () => project,
+    getInstance = () => instance || (instance = createInstance());
 
-    return callbackFunction = functor(participants, 'seniorityLevel', 'senior');
-  },
-   
-  addParticipant = (participantObject, callbackFunction) => {
-    callbackFunction = (key) => {
-      if (key.seniorityLevel) {
-        participants.push(key);
-      } else {
-        return new Error();
-      }
-    }
-
-    participantObject.map(callbackFunction);
-    return participants;
-  }
-  
-  removeParticipant = (participantObject, callbackFunction) => {
-    return participants.splice(0, 1);
-  }
-  
-  setPricing = (pricingObject, callbackFunction) => {
-    pricingObject = new Object(pricingObject);
-    return pricingObject;
-  },
-  
-  calculateSalary = (obj, periodInDays) => {
-    for (let key in obj) {
-      return obj[key] *= periodInDays;
-    }
-  }
-
-  const createInstance = () => {
-    return {
-      init: init,
-      findParticipant: findParticipant,
-      findParticipants: findParticipants,
-      addParticipant: addParticipant,
-      removeParticipant: removeParticipant,
-      setPricing: setPricing,
-      calculateSalary: calculateSalary
-    }
-  }
-
-  return {
-    getInstance: function() {
-      return isBusy || (isBusy = createInstance());
-    }
-  }
+  return getInstance();
 })();
-
-let junior = ProjectModule.getInstance().setPricing({ 'junior': 10 });
-console.log(junior);
-let days = ProjectModule.getInstance().calculateSalary(junior, 8);
-console.log(days);
 
 module.exports = {
   firstName: 'Mihaylo',
   lastName: 'Merezhko',
   task: ProjectModule
-}
+};
