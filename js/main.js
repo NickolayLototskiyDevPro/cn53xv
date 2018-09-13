@@ -31,3 +31,39 @@ getVoices();
 if (sync.onvoiceschanged !== undefined) {
   sync.onvoiceschanged = getVoices;
 }
+
+const speak = () => {
+  body.style.background = 'url(img/wave.gif)';
+  body.style.backgroundRepeat = 'repeat-x';
+  body.style.backgroundSize = '100% 100%';
+
+  const speakText = new SpeechSynthesisUtterance(textInput.value);
+
+  speakText.onend = e => body.style.background = '#343a40';
+
+  speakText.onerror = e => console.error(e);
+
+  const selectedVoice = select.selectedOptions[0].getAttribute('data-name');
+
+  voices.forEach(voice => {
+    if (voice.name === selectedVoice) {
+      speakText.voice = voice;
+    }
+  });
+
+  speakText.rate = rate.value;
+  speakText.pitch = pitch.value;
+
+  sync.speak(speakText);
+}
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+
+  speak();
+});
+
+rate.addEventListener('change', e => rateValue.textContent = rate.value);
+pitch.addEventListener('change', e => pitchValue.textContent = pitch.value);
+
+select.addEventListener('change', e => speak());
